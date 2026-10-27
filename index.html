@@ -69,9 +69,15 @@
                     <p class="text-xs text-slate-400 font-medium truncate">Zeytin Festivali Bilgi Testi</p>
                 </div>
             </div>
-            <div id="score-pill-wrap" class="hidden items-center space-x-1.5 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700 flex-shrink-0">
-                <i class="fa-solid fa-award text-yellow-400 text-sm"></i>
-                <span id="current-score-pill" class="text-sm font-bold text-slate-200">0 / 15</span>
+            <div class="flex items-center space-x-2 flex-shrink-0">
+                <div id="timer-wrap" class="hidden items-center space-x-1 bg-slate-800/90 px-3 py-1 rounded-full border border-yellow-500/40 text-yellow-400 text-sm font-bold">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    <span id="timer-display">00:00</span>
+                </div>
+                <div id="score-pill-wrap" class="hidden items-center space-x-1.5 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
+                    <i class="fa-solid fa-award text-yellow-400 text-sm"></i>
+                    <span id="current-score-pill" class="text-sm font-bold text-slate-200">0 / 15</span>
+                </div>
             </div>
         </div>
     </header>
@@ -156,7 +162,8 @@
 
             <div class="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 mb-4">
                 <div id="final-percentage" class="title-font font-black text-4xl text-yellow-400 mb-1">%0 Niziplisin</div>
-                <p id="final-score-details" class="text-slate-300 text-base font-semibold mb-3">15 sorudan 0 doğru</p>
+                <p id="final-score-details" class="text-slate-300 text-base font-semibold mb-1">15 sorudan 0 doğru</p>
+                <p id="final-time-details" class="text-cyan-400 text-base font-bold mb-3"><i class="fa-solid fa-stopwatch mr-1"></i> Süre: 00:00</p>
                 <span id="badge-pill" class="inline-block px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">Unvan</span>
                 <p id="final-title-desc" class="text-slate-300 text-sm italic">Açıklama</p>
             </div>
@@ -195,14 +202,14 @@
 
         const RAW_QUIZ_DATA = [
             { question: "Nizip’in coğrafi işaretli ve resmi olarak tescilli olan ürünü hangisidir?", options: ["Nane", "Pulbiber", "Antep Fıstığı", "Zeytin"], correctText: "Nane", explanation: "Nizip nanesi Türk Patent ve Marka Kurumu tarafından coğrafi işaretle tescillenmiştir." },
-            { question: "1904 yılında yapımına başlanan, yapım aşamasında halkın da görev aldığı Nizip’in en eski camisi hangisidir?", options: ["Çarşı / Molla Ahmet Camii", "Fatih Camii", "Ulucami", "Hacı Ali Efendi Camii"], correctText: "Çarşı / Molla Ahmet Camii", explanation: "1904 yılında yapımına başlanan Çarşı (Molla Ahmet) Camii halkın katılımıyla inşa edilen Nizip'in en köklü camilerindendir." },
+            { question: "1904 yılında yapımına başlanan, yapım aşamasında halkın da görev aldığı Nizip’in en eski camisi hangisidir?", options: ["Çarşı Camii", "Fatih Camii", "Ulucami", "Hacı Ali Efendi Camii"], correctText: "Çarşı Camii", explanation: "1904 yılında yapımına başlanan Çarşı Camii, halkın katılımıyla inşa edilen Nizip'in en köklü camilerindendir." },
             { question: "Nizip’in eski adı nedir?", options: ["Nezib", "Nisibis", "Zeugma", "Neapolis"], correctText: "Nezib", explanation: "Tarihi kayıtlarda Nizip yerleşiminin eski adı Nezib olarak geçmektedir." },
             { question: "Fırat Nehri kıyısında yer alan ve ‘Çingene Kızı’ mozaiği ile tüm dünyada tanınan antik kentimiz hangisidir?", options: ["Zeugma Antik Kenti", "Efes", "Göbeklitepe", "Hierapolis"], correctText: "Zeugma Antik Kenti", explanation: "Zeugma Antik Kenti Roma döneminden kalma mozaikleriyle ünlüdür." },
-            { question: "1839 yılında Nizip sınırlarında Osmanlı Ordusu ile Mısır Valisi Kavalalı İbrahim Paşa ordusu arasında gerçekleşen tarihi savaş hangisidir?", options: ["Nizip Muharebesi", "Çaldıran Savaşı", "Mercidabık Savaşı", "Plevne Müdafaası"], correctText: "Nizip Muharebesi", explanation: "24 Haziran 1839'daki Nizip Muharebesi önemli bir dönüm noktasıdır." },
-            { question: "Zeugma hangi köyde yer alır?", options: ["Belkıs Köyü", "Gevence", "Kaleköy", "Yeniyazı"], correctText: "Belkıs Köyü", explanation: "Zeugma Antik Kenti Belkıs köyü sınırları içerisinde yer almaktadır." },
+            { question: "24 Haziran 1839 tarihinde Nizip yakınlarında yapılan Nizip Muharebesi hangi devletler arasında gerçekleşmiştir?", options: ["Osmanlı - Mısır", "Osmanlı - Fransa", "Mısır - Fransa", "Osmanlı - İran"], correctText: "Osmanlı - Mısır", explanation: "24 Haziran 1839'da Nizip yakınlarında Osmanlı ordusu ile Kavalalı Mehmed Ali Paşa yönetimindeki Mısır ordusu karşı karşıya geldi; savaşı Mısır ordusu kazandı." },
+            { question: "Zeugma hangi köyde yer alır?", options: ["Belkıs Köyü", "Gevence", "Kocatepe", "Yeniyazı"], correctText: "Belkıs Köyü", explanation: "Zeugma Antik Kenti Belkıs köyü sınırları içerisinde yer almaktadır." },
             { question: "Fırat Nehri kıyısında, dik kayalıklar üzerine kurulmuş, Gaziantep'in en büyüleyici tarihi kalelerinden biri hangisidir?", options: ["Rumkale", "Gaziantep Kalesi", "Alanya Kalesi", "Kızkalesi"], correctText: "Rumkale", explanation: "Rumkale Fırat Nehri kıyısında yükselen tarihi bir şaheserdir." },
             { question: "Nizip'te geleneksel olarak zeytin ve zeytinyağından üretilen ünlü doğal temizlik ürünü hangisidir?", options: ["Nizip Zeytinyağlı Sabunu", "Defne Şampuanı", "Kükürtlü Sabun", "Lavanta Sabunu"], correctText: "Nizip Zeytinyağlı Sabunu", explanation: "Nizip zeytinyağlı sabun üretim merkezidir." },
-            { question: "Nizip ve civarında yetiştirilen, baklavanın ana hammaddesi olan değerli kuruyemiş hangisidir?", options: ["Antep Fıstığı", "Siirt Fıstığı", "Badem", "Fındık"], correctText: "Antep Fıstığı", explanation: "Antep fıstığı bölgenin en önemli tarımsal değeridir." },
+            { question: "Şebeke suyu yokken Nizip halkının gidip su aldığı yer neresidir?", options: ["Cullom Pınarı", "Sacur Çayı", "Alleben Deresi", "Merzimen Çayı"], correctText: "Cullom Pınarı", explanation: "Şebeke suyu olmadığı dönemlerde Nizip halkı içme ve kullanma suyunu Cullom Pınarı'ndan getirirdi." },
             { question: "Zeytin ağacının uzun ömürlü olması nedeniyle tarih boyunca aldığı dünyaca bilinen unvan/sıfat nedir?", options: ["Ölümsüz Ağaç", "Altın Ağaç", "Yeşil Dev", "Sonsuz Yaprak"], correctText: "Ölümsüz Ağaç", explanation: "Zeytin ağacı 'Ölümsüz Ağaç' olarak anılır." },
             { question: "Zeytin dalı tarih boyunca uluslararası kültürde neyin ve hangi değerin simgesi olmuştur?", options: ["Barış, Dostluk ve Bereket", "Savaş ve Mücadele", "Zenginlik ve Ticaret", "Hız ve Güç"], correctText: "Barış, Dostluk ve Bereket", explanation: "Zeytin dalı barış ve bereketin simgesidir." },
             { question: "‘Bahdeniz’ Nizip’te hangisi için kullanılan bir kelimedir?", options: ["Maydanoz", "Nane", "Marul", "Dereotu"], correctText: "Maydanoz", explanation: "Nizip yöresel ağzında 'bahdeniz' kelimesi maydanoz anlamında kullanılmaktadır." },
@@ -210,6 +217,12 @@
             { question: "Güneydoğu Anadolu Bölgesi'nin en önemli su kaynaklarından olan ve Nizip'in doğu sınırını oluşturan nehir hangisidir?", options: ["Fırat Nehri", "Dicle Nehri", "Seyhan Nehri", "Asi Nehri"], correctText: "Fırat Nehri", explanation: "Fırat Nehri bölgenin can damarı olup Nizip'in tarihi ve coğrafi kimliğinde büyük bir yere sahiptir." },
             { question: "Hangisi Nizip’te bulunmaz?", options: ["Zeugma Mozaik Müzesi", "Fevkani Kilisesi", "Zeugma Antik Kenti", "Çarşı Cami"], correctText: "Zeugma Mozaik Müzesi", explanation: "Zeugma Mozaik Müzesi Nizip'te değil Gaziantep merkezde yer almaktadır." }
         ];
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2, '0');
+            const r = (sec % 60).toString().padStart(2, '0');
+            return `${m}:${r}`;
+        }
 
         function shuffle(arr) {
             const a = [...arr];
@@ -228,8 +241,13 @@
                 this.jokers = { '5050': true, 'ai': true, 'phone': true };
                 this.quizData = [];
                 this.missed = [];
+                this.timerInterval = null;
+                this.startTime = 0;
+                this.secondsElapsed = 0;
 
                 const $ = id => document.getElementById(id);
+                this.timerWrap = $('timer-wrap');
+                this.timerDisplay = $('timer-display');
                 this.startScreen = $('start-screen');
                 this.gameScreen = $('game-screen');
                 this.resultScreen = $('result-screen');
@@ -269,8 +287,31 @@
                 this.scorePillWrap.classList.remove('hidden');
                 this.scorePillWrap.classList.add('flex');
 
+                this.timerWrap.classList.remove('hidden');
+                this.timerWrap.classList.add('flex');
+                this.startTimer();
+
                 this.loadQuestion();
                 window.scrollTo(0, 0);
+            }
+
+            // Süre, başlangıç anından Date.now() ile hesaplanır (sekme arka plana alınsa da kaymaz)
+            startTimer() {
+                clearInterval(this.timerInterval);
+                this.startTime = Date.now();
+                this.secondsElapsed = 0;
+                this.timerDisplay.innerText = '00:00';
+                this.timerInterval = setInterval(() => {
+                    this.secondsElapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                    this.timerDisplay.innerText = formatTime(this.secondsElapsed);
+                }, 500);
+            }
+
+            stopTimer() {
+                clearInterval(this.timerInterval);
+                this.secondsElapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                this.timerWrap.classList.add('hidden');
+                this.timerWrap.classList.remove('flex');
             }
 
             resetJokerButtonsUI() {
@@ -337,6 +378,7 @@
             }
 
             showResults() {
+                this.stopTimer();
                 this.gameScreen.classList.add('hidden');
                 this.scorePillWrap.classList.add('hidden');
                 this.scorePillWrap.classList.remove('flex');
@@ -346,6 +388,7 @@
                 const pct = Math.round((this.correctCount / total) * 100);
                 document.getElementById('final-percentage').innerText = `%${pct} Niziplisin`;
                 document.getElementById('final-score-details').innerText = `${total} sorudan ${this.correctCount} doğru`;
+                document.getElementById('final-time-details').innerHTML = `<i class="fa-solid fa-stopwatch mr-1"></i> Süre: ${formatTime(this.secondsElapsed)}`;
 
                 let desc, badge;
                 if (pct === 100) { badge = "👑 ÖZ NİZİP SEVDALISI"; desc = "Mükemmel! Nizip'i avucunun içi gibi biliyorsun."; }
@@ -382,6 +425,7 @@
             }
 
             restart() {
+                clearInterval(this.timerInterval);
                 this.resultScreen.classList.add('hidden');
                 this.startScreen.classList.remove('hidden');
                 window.scrollTo(0, 0);

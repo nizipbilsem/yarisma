@@ -1,0 +1,478 @@
+[index.html](https://github.com/user-attachments/files/34023144/index.html)
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0d18">
+    <title>Kim Ne Kadar Nizipli? | Nizip BİLSEM Bilgi Testi</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        html, body { min-height: 100%; }
+        body {
+            background: #0a0d18;
+            background: radial-gradient(circle at center, #1a2238 0%, #080b12 100%) fixed;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            color: #ffffff;
+            min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .title-font { font-family: 'Montserrat', system-ui, sans-serif; }
+        button { touch-action: manipulation; -webkit-appearance: none; appearance: none; font-family: inherit; }
+
+        .quiz-option {
+            clip-path: polygon(14px 0%, calc(100% - 14px) 0%, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0% 50%);
+            transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #334155;
+            min-height: 56px;
+        }
+        /* Dokunmatik ekranlarda "yapışan hover" olmasın diye sadece fareli cihazlarda */
+        @media (hover: hover) and (pointer: fine) {
+            .quiz-option:hover:not(:disabled) {
+                background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+                border-color: #facc15;
+            }
+        }
+        .quiz-option.selected { background: linear-gradient(180deg, #ca8a04 0%, #854d0e 100%) !important; border-color: #fef08a !important; }
+        .quiz-option.correct  { background: linear-gradient(180deg, #16a34a 0%, #14532d 100%) !important; border-color: #4ade80 !important; }
+        .quiz-option.wrong    { background: linear-gradient(180deg, #dc2626 0%, #7f1d1d 100%) !important; border-color: #fca5a5 !important; }
+
+        .glass-panel {
+            background: rgba(18, 24, 41, 0.92);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .safe-bottom { padding-bottom: max(0.625rem, env(safe-area-inset-bottom)); }
+        .safe-top { padding-top: max(0.75rem, env(safe-area-inset-top)); }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="flex flex-col overflow-x-hidden">
+
+    <header class="w-full bg-slate-900/90 border-b border-slate-800 px-4 pb-3 safe-top sticky top-0 z-40" style="-webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);">
+        <div class="max-w-4xl mx-auto flex justify-between items-center gap-2">
+            <div class="flex items-center space-x-2.5 min-w-0">
+                <div class="bg-gradient-to-tr from-yellow-500 to-emerald-600 p-2 rounded-xl text-slate-950 font-bold shadow-lg flex-shrink-0">
+                    <i class="fa-solid fa-seedling text-lg"></i>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="title-font font-black text-base md:text-lg text-yellow-400 tracking-wide truncate">NİZİP BİLSEM</h1>
+                    <p class="text-xs text-slate-400 font-medium truncate">Zeytin Festivali Bilgi Testi</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 flex-shrink-0">
+                <div id="timer-wrap" class="hidden items-center space-x-1 bg-slate-800/90 px-3 py-1 rounded-full border border-yellow-500/40 text-yellow-400 text-sm font-bold">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    <span id="timer-display">00:00</span>
+                </div>
+                <div id="score-pill-wrap" class="hidden items-center space-x-1.5 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
+                    <i class="fa-solid fa-award text-yellow-400 text-sm"></i>
+                    <span id="current-score-pill" class="text-sm font-bold text-slate-200">0 / 15</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-3 py-4 md:p-6 flex flex-col justify-center">
+
+        <!-- EKRAN 1: BAŞLANGIÇ -->
+        <div id="start-screen" class="glass-panel rounded-3xl p-6 md:p-10 text-center max-w-lg mx-auto w-full">
+            <span class="inline-block px-3 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-full text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                Nizip Zeytin Festivali Özel
+            </span>
+            <h2 class="title-font font-black text-3xl md:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-500 mb-3 leading-tight">
+                KİM NE KADAR NİZİPLİ?
+            </h2>
+            <p class="text-slate-300 text-base mb-6 leading-relaxed">
+                15 soruluk testi çöz, Nizip'i ne kadar tanıdığını öğren!
+            </p>
+            <button onclick="quizApp.startQuiz()" class="w-full py-4 bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600 text-slate-950 font-black text-lg rounded-xl shadow-lg uppercase tracking-wider cursor-pointer">
+                <i class="fa-solid fa-play mr-1.5"></i> Teste Başla
+            </button>
+            <p class="text-xs text-slate-500 mt-4">Kayıt veya giriş gerekmez. Hiçbir kişisel bilgi alınmaz.</p>
+        </div>
+
+        <!-- EKRAN 2: OYUN -->
+        <div id="game-screen" class="hidden flex flex-col space-y-3 max-w-3xl mx-auto w-full">
+            <div class="glass-panel p-3.5 rounded-2xl flex justify-between items-center gap-2">
+                <div id="progress-text" class="text-sm font-bold text-yellow-400">Soru 1 / 15</div>
+                <div class="flex items-center space-x-1.5">
+                    <button id="joker-5050" onclick="quizApp.useJoker('5050')" class="px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm font-bold text-yellow-400 cursor-pointer">%50</button>
+                    <button id="joker-ai" onclick="quizApp.useJoker('ai')" class="px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm font-bold text-cyan-400 cursor-pointer">AI</button>
+                    <button id="joker-phone" onclick="quizApp.useJoker('phone')" class="px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm font-bold text-emerald-400 cursor-pointer">Uzman</button>
+                </div>
+            </div>
+
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+                <div id="progress-bar" class="bg-gradient-to-r from-yellow-500 to-amber-400 h-full transition-all duration-300" style="width:0%"></div>
+            </div>
+
+            <div class="glass-panel p-5 md:p-8 rounded-3xl text-center min-h-[130px] flex items-center justify-center border border-slate-700/50">
+                <h3 id="question-text" class="title-font font-bold text-lg md:text-2xl text-slate-100 leading-snug">Soru yükleniyor...</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button id="btn-opt-0" onclick="quizApp.selectOption(0)" class="quiz-option px-6 py-3 text-left rounded-xl flex items-center space-x-3 text-slate-200 cursor-pointer">
+                    <span class="font-black text-yellow-400 text-base flex-shrink-0">A:</span>
+                    <span id="opt-text-0" class="font-medium text-base flex-grow min-w-0 break-words">A</span>
+                </button>
+                <button id="btn-opt-1" onclick="quizApp.selectOption(1)" class="quiz-option px-6 py-3 text-left rounded-xl flex items-center space-x-3 text-slate-200 cursor-pointer">
+                    <span class="font-black text-yellow-400 text-base flex-shrink-0">B:</span>
+                    <span id="opt-text-1" class="font-medium text-base flex-grow min-w-0 break-words">B</span>
+                </button>
+                <button id="btn-opt-2" onclick="quizApp.selectOption(2)" class="quiz-option px-6 py-3 text-left rounded-xl flex items-center space-x-3 text-slate-200 cursor-pointer">
+                    <span class="font-black text-yellow-400 text-base flex-shrink-0">C:</span>
+                    <span id="opt-text-2" class="font-medium text-base flex-grow min-w-0 break-words">C</span>
+                </button>
+                <button id="btn-opt-3" onclick="quizApp.selectOption(3)" class="quiz-option px-6 py-3 text-left rounded-xl flex items-center space-x-3 text-slate-200 cursor-pointer">
+                    <span class="font-black text-yellow-400 text-base flex-shrink-0">D:</span>
+                    <span id="opt-text-3" class="font-medium text-base flex-grow min-w-0 break-words">D</span>
+                </button>
+            </div>
+
+            <div id="explanation-card" class="hidden glass-panel p-4 rounded-2xl border-l-4 border-yellow-500">
+                <div class="flex items-start space-x-3">
+                    <div class="text-yellow-400 text-2xl"><i class="fa-solid fa-lightbulb"></i></div>
+                    <div class="flex-grow min-w-0">
+                        <h4 class="font-bold text-yellow-400 text-sm uppercase tracking-wide mb-1">Biliyor muydunuz?</h4>
+                        <p id="explanation-text" class="text-slate-200 text-sm md:text-base leading-relaxed">Açıklama.</p>
+                    </div>
+                </div>
+                <div class="mt-3 text-right">
+                    <button onclick="quizApp.nextQuestion()" class="px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 font-bold rounded-xl text-sm cursor-pointer">
+                        <span id="next-btn-label">Sonraki Soru</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- EKRAN 3: SONUÇ -->
+        <div id="result-screen" class="hidden glass-panel rounded-3xl p-5 md:p-8 max-w-xl mx-auto text-center w-full">
+            <div class="text-yellow-400 text-5xl mb-1"><i class="fa-solid fa-trophy animate-bounce"></i></div>
+            <h2 class="title-font font-black text-2xl md:text-3xl text-white mb-3">TEST TAMAMLANDI!</h2>
+
+            <div class="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 mb-4">
+                <div id="final-percentage" class="title-font font-black text-4xl text-yellow-400 mb-1">%0 Niziplisin</div>
+                <p id="final-score-details" class="text-slate-300 text-base font-semibold mb-1">15 sorudan 0 doğru</p>
+                <p id="final-time-details" class="text-cyan-400 text-base font-bold mb-3"><i class="fa-solid fa-stopwatch mr-1"></i> Süre: 00:00</p>
+                <span id="badge-pill" class="inline-block px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">Unvan</span>
+                <p id="final-title-desc" class="text-slate-300 text-sm italic">Açıklama</p>
+            </div>
+
+            <div id="missed-box" class="hidden text-left bg-slate-900/60 rounded-2xl p-4 border border-slate-800 mb-4">
+                <h4 class="font-bold text-yellow-400 text-sm uppercase tracking-wide mb-2"><i class="fa-solid fa-book-open mr-1.5"></i> Kaçırdığın sorular</h4>
+                <ul id="missed-list" class="space-y-3 text-sm"></ul>
+            </div>
+
+            <button onclick="quizApp.restart()" class="w-full py-3.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 font-bold rounded-xl text-sm uppercase cursor-pointer">
+                <i class="fa-solid fa-rotate-right mr-1.5"></i> Tekrar Dene
+            </button>
+        </div>
+
+    </main>
+
+    <!-- JOKER MODALI -->
+    <div id="joker-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" style="-webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);">
+        <div class="glass-panel p-5 rounded-2xl max-w-sm w-full border border-yellow-500/40 text-center">
+            <div id="joker-modal-icon" class="text-4xl text-yellow-400 mb-2"><i class="fa-solid fa-robot"></i></div>
+            <h3 id="joker-modal-title" class="title-font font-bold text-lg text-white mb-1">İpucu</h3>
+            <p id="joker-modal-body" class="text-slate-200 text-base mb-4 leading-relaxed">İçerik</p>
+            <button onclick="quizApp.closeJokerModal()" class="w-full py-3 bg-slate-800 text-yellow-400 font-bold rounded-xl text-sm border border-slate-600 cursor-pointer">Anlaşıldı</button>
+        </div>
+    </div>
+
+    <footer class="w-full bg-slate-950 border-t border-slate-900 pt-2.5 safe-bottom text-center text-xs text-slate-500">
+        <p>© 2026 Nizip BİLSEM - Zeytin Festivali</p>
+    </footer>
+
+    <script>
+        const TOTAL_QUESTIONS = 15;
+        const LETTERS = ['A', 'B', 'C', 'D'];
+        const AI_ACCURACY = 0.80;
+        const EXPERT_ACCURACY = 0.90;
+
+        const RAW_QUIZ_DATA = [
+            { question: "Nizip’in coğrafi işaretli ve resmi olarak tescilli olan ürünü hangisidir?", options: ["Nane", "Pulbiber", "Antep Fıstığı", "Zeytin"], correctText: "Nane", explanation: "Nizip nanesi Türk Patent ve Marka Kurumu tarafından coğrafi işaretle tescillenmiştir." },
+            { question: "1904 yılında yapımına başlanan, yapım aşamasında halkın da görev aldığı Nizip’in en eski camisi hangisidir?", options: ["Çarşı Camii", "Fatih Camii", "Ulucami", "Hacı Ali Efendi Camii"], correctText: "Çarşı Camii", explanation: "1904 yılında yapımına başlanan Çarşı Camii, halkın katılımıyla inşa edilen Nizip'in en köklü camilerindendir." },
+            { question: "Nizip’in eski adı nedir?", options: ["Nezib", "Nisibis", "Zeugma", "Neapolis"], correctText: "Nezib", explanation: "Tarihi kayıtlarda Nizip yerleşiminin eski adı Nezib olarak geçmektedir." },
+            { question: "Fırat Nehri kıyısında yer alan ve ‘Çingene Kızı’ mozaiği ile tüm dünyada tanınan antik kentimiz hangisidir?", options: ["Zeugma Antik Kenti", "Efes", "Göbeklitepe", "Hierapolis"], correctText: "Zeugma Antik Kenti", explanation: "Zeugma Antik Kenti Roma döneminden kalma mozaikleriyle ünlüdür." },
+            { question: "24 Haziran 1839 tarihinde Nizip yakınlarında yapılan Nizip Muharebesi hangi devletler arasında gerçekleşmiştir?", options: ["Osmanlı - Mısır", "Osmanlı - Fransa", "Mısır - Fransa", "Osmanlı - İran"], correctText: "Osmanlı - Mısır", explanation: "24 Haziran 1839'da Nizip yakınlarında Osmanlı ordusu ile Kavalalı Mehmed Ali Paşa yönetimindeki Mısır ordusu karşı karşıya geldi; savaşı Mısır ordusu kazandı." },
+            { question: "Zeugma hangi köyde yer alır?", options: ["Belkıs Köyü", "Gevence", "Kocatepe", "Yeniyazı"], correctText: "Belkıs Köyü", explanation: "Zeugma Antik Kenti Belkıs köyü sınırları içerisinde yer almaktadır." },
+            { question: "Fırat Nehri kıyısında, dik kayalıklar üzerine kurulmuş, Gaziantep'in en büyüleyici tarihi kalelerinden biri hangisidir?", options: ["Rumkale", "Gaziantep Kalesi", "Alanya Kalesi", "Kızkalesi"], correctText: "Rumkale", explanation: "Rumkale Fırat Nehri kıyısında yükselen tarihi bir şaheserdir." },
+            { question: "Nizip'te geleneksel olarak zeytin ve zeytinyağından üretilen ünlü doğal temizlik ürünü hangisidir?", options: ["Nizip Zeytinyağlı Sabunu", "Defne Şampuanı", "Kükürtlü Sabun", "Lavanta Sabunu"], correctText: "Nizip Zeytinyağlı Sabunu", explanation: "Nizip zeytinyağlı sabun üretim merkezidir." },
+            { question: "Şebeke suyu yokken Nizip halkının gidip su aldığı yer neresidir?", options: ["Cullom Pınarı", "Sacur Çayı", "Alleben Deresi", "Merzimen Çayı"], correctText: "Cullom Pınarı", explanation: "Şebeke suyu olmadığı dönemlerde Nizip halkı içme ve kullanma suyunu Cullom Pınarı'ndan getirirdi." },
+            { question: "Zeytin ağacının uzun ömürlü olması nedeniyle tarih boyunca aldığı dünyaca bilinen unvan/sıfat nedir?", options: ["Ölümsüz Ağaç", "Altın Ağaç", "Yeşil Dev", "Sonsuz Yaprak"], correctText: "Ölümsüz Ağaç", explanation: "Zeytin ağacı 'Ölümsüz Ağaç' olarak anılır." },
+            { question: "Zeytin dalı tarih boyunca uluslararası kültürde neyin ve hangi değerin simgesi olmuştur?", options: ["Barış, Dostluk ve Bereket", "Savaş ve Mücadele", "Zenginlik ve Ticaret", "Hız ve Güç"], correctText: "Barış, Dostluk ve Bereket", explanation: "Zeytin dalı barış ve bereketin simgesidir." },
+            { question: "‘Bahdeniz’ Nizip’te hangisi için kullanılan bir kelimedir?", options: ["Maydanoz", "Nane", "Marul", "Dereotu"], correctText: "Maydanoz", explanation: "Nizip yöresel ağzında 'bahdeniz' kelimesi maydanoz anlamında kullanılmaktadır." },
+            { question: "‘Zeugma’ kelimesi ne anlama gelir?", options: ["Köprübaşı", "Altın Şehir", "Su Koyu", "Büyük Kale"], correctText: "Köprübaşı", explanation: "Zeugma kelimesi antik dilde 'Köprübaşı' veya 'Geçit' anlamına gelmektedir." },
+            { question: "Güneydoğu Anadolu Bölgesi'nin en önemli su kaynaklarından olan ve Nizip'in doğu sınırını oluşturan nehir hangisidir?", options: ["Fırat Nehri", "Dicle Nehri", "Seyhan Nehri", "Asi Nehri"], correctText: "Fırat Nehri", explanation: "Fırat Nehri bölgenin can damarı olup Nizip'in tarihi ve coğrafi kimliğinde büyük bir yere sahiptir." },
+            { question: "Hangisi Nizip’te bulunmaz?", options: ["Zeugma Mozaik Müzesi", "Fevkani Kilisesi", "Zeugma Antik Kenti", "Çarşı Cami"], correctText: "Zeugma Mozaik Müzesi", explanation: "Zeugma Mozaik Müzesi Nizip'te değil Gaziantep merkezde yer almaktadır." }
+        ];
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2, '0');
+            const r = (sec % 60).toString().padStart(2, '0');
+            return `${m}:${r}`;
+        }
+
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        class QuizGame {
+            constructor() {
+                this.currentIndex = 0;
+                this.correctCount = 0;
+                this.isAnswerLocked = false;
+                this.jokers = { '5050': true, 'ai': true, 'phone': true };
+                this.quizData = [];
+                this.missed = [];
+                this.timerInterval = null;
+                this.startTime = 0;
+                this.secondsElapsed = 0;
+
+                const $ = id => document.getElementById(id);
+                this.timerWrap = $('timer-wrap');
+                this.timerDisplay = $('timer-display');
+                this.startScreen = $('start-screen');
+                this.gameScreen = $('game-screen');
+                this.resultScreen = $('result-screen');
+                this.questionText = $('question-text');
+                this.progressText = $('progress-text');
+                this.progressBar = $('progress-bar');
+                this.scorePillWrap = $('score-pill-wrap');
+                this.currentScorePill = $('current-score-pill');
+                this.explanationCard = $('explanation-card');
+                this.explanationText = $('explanation-text');
+                this.nextBtnLabel = $('next-btn-label');
+                this.jokerModal = $('joker-modal');
+                this.jokerModalTitle = $('joker-modal-title');
+                this.jokerModalBody = $('joker-modal-body');
+                this.jokerModalIcon = $('joker-modal-icon');
+            }
+
+            prepareShuffledQuizData() {
+                this.quizData = shuffle(RAW_QUIZ_DATA).map(q => {
+                    const opts = shuffle(q.options);
+                    return { question: q.question, options: opts, correct: opts.indexOf(q.correctText), explanation: q.explanation };
+                });
+            }
+
+            startQuiz() {
+                this.currentIndex = 0;
+                this.correctCount = 0;
+                this.isAnswerLocked = false;
+                this.missed = [];
+                this.jokers = { '5050': true, 'ai': true, 'phone': true };
+                this.prepareShuffledQuizData();
+                this.resetJokerButtonsUI();
+
+                this.startScreen.classList.add('hidden');
+                this.resultScreen.classList.add('hidden');
+                this.gameScreen.classList.remove('hidden');
+                this.scorePillWrap.classList.remove('hidden');
+                this.scorePillWrap.classList.add('flex');
+
+                this.timerWrap.classList.remove('hidden');
+                this.timerWrap.classList.add('flex');
+                this.startTimer();
+
+                this.loadQuestion();
+                window.scrollTo(0, 0);
+            }
+
+            // Süre, başlangıç anından Date.now() ile hesaplanır (sekme arka plana alınsa da kaymaz)
+            startTimer() {
+                clearInterval(this.timerInterval);
+                this.startTime = Date.now();
+                this.secondsElapsed = 0;
+                this.timerDisplay.innerText = '00:00';
+                this.timerInterval = setInterval(() => {
+                    this.secondsElapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                    this.timerDisplay.innerText = formatTime(this.secondsElapsed);
+                }, 500);
+            }
+
+            stopTimer() {
+                clearInterval(this.timerInterval);
+                this.secondsElapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                this.timerWrap.classList.add('hidden');
+                this.timerWrap.classList.remove('flex');
+            }
+
+            resetJokerButtonsUI() {
+                ['5050', 'ai', 'phone'].forEach(id => {
+                    const btn = document.getElementById(`joker-${id}`);
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-30', 'cursor-not-allowed', 'line-through');
+                });
+            }
+
+            loadQuestion() {
+                this.isAnswerLocked = false;
+                this.explanationCard.classList.add('hidden');
+
+                const q = this.quizData[this.currentIndex];
+                this.questionText.innerText = q.question;
+                this.progressText.innerText = `Soru ${this.currentIndex + 1} / ${TOTAL_QUESTIONS}`;
+                this.progressBar.style.width = `${((this.currentIndex + 1) / this.quizData.length) * 100}%`;
+                this.currentScorePill.innerText = `${this.correctCount} / ${TOTAL_QUESTIONS}`;
+
+                for (let i = 0; i < 4; i++) {
+                    const btn = document.getElementById(`btn-opt-${i}`);
+                    document.getElementById(`opt-text-${i}`).innerText = q.options[i];
+                    btn.className = "quiz-option px-6 py-3 text-left rounded-xl flex items-center space-x-3 text-slate-200 cursor-pointer";
+                    btn.style.visibility = "visible";
+                    btn.disabled = false;
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            selectOption(i) {
+                if (this.isAnswerLocked) return;
+                this.isAnswerLocked = true;
+
+                const q = this.quizData[this.currentIndex];
+                const selectedBtn = document.getElementById(`btn-opt-${i}`);
+                const correctBtn = document.getElementById(`btn-opt-${q.correct}`);
+                for (let k = 0; k < 4; k++) document.getElementById(`btn-opt-${k}`).disabled = true;
+                selectedBtn.classList.add('selected');
+
+                setTimeout(() => {
+                    selectedBtn.classList.remove('selected');
+                    if (i === q.correct) {
+                        selectedBtn.classList.add('correct');
+                        this.correctCount++;
+                        this.currentScorePill.innerText = `${this.correctCount} / ${TOTAL_QUESTIONS}`;
+                        this.triggerConfetti();
+                    } else {
+                        selectedBtn.classList.add('wrong');
+                        correctBtn.classList.add('correct');
+                        this.missed.push({ question: q.question, correct: q.options[q.correct], chosen: q.options[i] });
+                    }
+                    this.explanationText.innerText = q.explanation;
+                    this.nextBtnLabel.innerText = (this.currentIndex === this.quizData.length - 1) ? 'Sonucu Gör' : 'Sonraki Soru';
+                    this.explanationCard.classList.remove('hidden');
+                    this.explanationCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 600);
+            }
+
+            nextQuestion() {
+                this.currentIndex++;
+                if (this.currentIndex >= this.quizData.length) this.showResults();
+                else this.loadQuestion();
+            }
+
+            showResults() {
+                this.stopTimer();
+                this.gameScreen.classList.add('hidden');
+                this.scorePillWrap.classList.add('hidden');
+                this.scorePillWrap.classList.remove('flex');
+                this.resultScreen.classList.remove('hidden');
+
+                const total = this.quizData.length;
+                const pct = Math.round((this.correctCount / total) * 100);
+                document.getElementById('final-percentage').innerText = `%${pct} Niziplisin`;
+                document.getElementById('final-score-details').innerText = `${total} sorudan ${this.correctCount} doğru`;
+                document.getElementById('final-time-details').innerHTML = `<i class="fa-solid fa-stopwatch mr-1"></i> Süre: ${formatTime(this.secondsElapsed)}`;
+
+                let desc, badge;
+                if (pct === 100) { badge = "👑 ÖZ NİZİP SEVDALISI"; desc = "Mükemmel! Nizip'i avucunun içi gibi biliyorsun."; }
+                else if (pct >= 80) { badge = "🏅 NİZİP KÜLTÜR ELÇİSİ"; desc = "Harika performans!"; }
+                else if (pct >= 60) { badge = "🌿 ZEYTİN AĞACI KAŞİFİ"; desc = "Tebrikler, iyi gidiyorsun!"; }
+                else { badge = "🌱 NİZİP MİSAFİRİ"; desc = "Standımızı gezip Nizip'i daha yakından öğrenebilirsin!"; }
+                document.getElementById('badge-pill').innerText = badge;
+                document.getElementById('final-title-desc').innerText = desc;
+
+                // Kaçırılan sorular (textContent: güvenli)
+                const box = document.getElementById('missed-box');
+                const list = document.getElementById('missed-list');
+                list.innerHTML = '';
+                if (this.missed.length) {
+                    this.missed.forEach(m => {
+                        const li = document.createElement('li');
+                        const q = document.createElement('div');
+                        q.className = 'text-slate-200 font-semibold';
+                        q.textContent = m.question;
+                        const a = document.createElement('div');
+                        a.className = 'text-emerald-400';
+                        a.textContent = 'Doğru cevap: ' + m.correct;
+                        li.appendChild(q);
+                        li.appendChild(a);
+                        list.appendChild(li);
+                    });
+                    box.classList.remove('hidden');
+                } else {
+                    box.classList.add('hidden');
+                }
+
+                this.triggerConfetti();
+                window.scrollTo(0, 0);
+            }
+
+            restart() {
+                clearInterval(this.timerInterval);
+                this.resultScreen.classList.add('hidden');
+                this.startScreen.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+
+            useJoker(type) {
+                if (!this.jokers[type] || this.isAnswerLocked) return;
+                this.jokers[type] = false;
+                const btn = document.getElementById(`joker-${type}`);
+                btn.disabled = true;
+                btn.classList.add('opacity-30', 'cursor-not-allowed', 'line-through');
+
+                const q = this.quizData[this.currentIndex];
+                const wrongs = [0, 1, 2, 3].filter(i => i !== q.correct);
+
+                if (type === '5050') {
+                    shuffle(wrongs).slice(0, 2).forEach(idx => {
+                        document.getElementById(`btn-opt-${idx}`).style.visibility = 'hidden';
+                    });
+                } else if (type === 'ai') {
+                    const pick = Math.random() < AI_ACCURACY ? q.correct : shuffle(wrongs)[0];
+                    this.showJokerModal("fa-robot text-cyan-400", "BİLSEM AI",
+                        `Bence doğru cevap <strong>${LETTERS[pick]}</strong>. Ama %${Math.round(AI_ACCURACY * 100)} emin olabiliyorum, yanılabilirim!`);
+                } else if (type === 'phone') {
+                    const pick = Math.random() < EXPERT_ACCURACY ? q.correct : shuffle(wrongs)[0];
+                    this.showJokerModal("fa-phone text-emerald-400", "Zeytin Uzmanı",
+                        `Uzman görüşü: Sanırım doğru cevap <strong>${LETTERS[pick]}</strong> şıkkı. Son karar senin!`);
+                }
+            }
+
+            showJokerModal(iconClass, title, htmlBody) {
+                this.jokerModalIcon.className = `text-4xl mb-2 fa-solid ${iconClass}`;
+                this.jokerModalTitle.innerText = title;
+                this.jokerModalBody.innerHTML = htmlBody;
+                this.jokerModal.classList.remove('hidden');
+            }
+
+            closeJokerModal() { this.jokerModal.classList.add('hidden'); }
+
+            triggerConfetti() {
+                try { confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 } }); } catch (e) {}
+            }
+        }
+
+        let quizApp;
+        window.addEventListener('load', function () { quizApp = new QuizGame(); });
+    </script>
+</body>
+</html>
